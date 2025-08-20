@@ -138,10 +138,23 @@
 <div class="bg2"></div>
 <div class="grain"></div>
 
+.pill-accent {
+  border-color: #27f3ffcc;
+  background: #0b0c10cc;
+  color: #27f3ff;
+  box-shadow: 0 0 12px #27f3ff66, 0 0 24px #27f3ff33;
+  transition: background .3s ease, box-shadow .3s ease;
+}
+.pill-accent:hover {
+  background: #132233cc;
+  box-shadow: 0 0 16px #27f3ff99, 0 0 32px #27f3ff66;
+}
+  
 <div class="wrap">
   <div class="meta">
     <span class="pill">Echo: 2025 • Seed Artifact 001</span>
     <span class="orbit"><span class="orb"></span> Online</span>
+    <a class="pill pill-accent" href="/artifacts/">📂 Artifact Index</a>
   </div>
   <h1 class="glitch" data-text="CredenceOS / Mirrorfold"><span>CredenceOS / Mirrorfold</span></h1>
   <p class="mono">Author: <strong>Jahn Sandsmark</strong> • <span id="today"></span> • ECHO-ID: SEED.2025.001</p>
