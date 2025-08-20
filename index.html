@@ -72,8 +72,13 @@
   .gallery figure{margin:0; position:relative; overflow:hidden; border-radius:18px; border:1px solid #7affc62b; background:#0b0c10cc; isolation:isolate}
   .gallery img{width:100%; height:230px; object-fit:cover; display:block; transform-origin:50% 50%; transition: transform .6s ease, filter .6s ease; cursor:pointer}
   .gallery figure::after{
-    content:""; position:absolute; inset:-40%; background: conic-gradient(from 0deg,#00ffd5,#7d4dff,#00ff73,#ff5df1,#00ffd5);
-    mix-blend-mode:overlay; opacity:.0; filter: blur(30px); transform: rotate(0deg); transition: opacity .6s ease, transform 1.6s ease;
+    content:"";
+    position:absolute; inset:-40%;
+    background: conic-gradient(from 0deg,#00ffd5,#7d4dff,#00ff73,#ff5df1,#00ffd5);
+    mix-blend-mode:overlay; opacity:.0;
+    filter: blur(30px); transform: rotate(0deg);
+    transition: opacity .6s ease, transform 1.6s ease;
+    pointer-events: none;        
   }
   .gallery figure:hover img{ transform: scale(1.08) rotate(.7deg); filter: saturate(130%) contrast(105%) }
   .gallery figure:hover::after{ opacity:.22; transform: rotate(180deg) }
