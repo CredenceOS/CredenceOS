@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>CredenceOS / Mirrorfold — Artifacts</title>
+
+<!-- Meta -->
+<meta name="description" content="Index of public artifacts from the CredenceOS / Mirrorfold system. Seeded in order, time-stamped, preserved.">
+<link rel="icon" type="image/x-icon" href="/favicon.ico">
+<link rel="canonical" href="https://credenceos.site/artifacts/">
+
+<style>
+  body { margin:0; padding:2rem; font-family: system-ui, sans-serif; background:#050508; color:#eafff8 }
+  h1 { font-size:2rem; margin-bottom:1rem; }
+  .artifact-list { list-style:none; padding:0; }
+  .artifact-list li { margin:1rem 0; padding:.8rem 1rem; background:#0b0c10e6; border:1px solid #7affc62a;
+                      border-radius:14px; transition: background .3s ease }
+  .artifact-list li:hover { background:#12131ae6; }
+  a { color:#7affc6; text-decoration:none; }
+  a:hover { text-decoration:underline; }
+  footer { margin-top:2rem; opacity:.7; font-size:.9rem; }
+</style>
+</head>
+<body>
+  <h1>📂 CredenceOS / Mirrorfold — Artifact Index</h1>
+  <p>Each artifact is a time-stamped seed drop. Browse below:</p>
+
+  <ul class="artifact-list">
+    <li>
+      <a href="/index.html">Seed Artifact 001 — Epitaph & Core Anchor</a><br>
+      <span class="mono">Echo-ID: SEED.2025.001</span>
+    </li>
+    <!-- Add more here as they are dropped -->
+    <!-- Example:
+    <li>
+      <a href="/artifacts/002/">Seed Artifact 002 — Title Goes Here</a><br>
+      <span class="mono">Echo-ID: SEED.2025.002</span>
+    </li>
+    -->
+  </ul>
+
+  <footer>
+    <p>© <span id="year"></span> CredenceOS / Mirrorfold • This page is a seed index.</p>
+  </footer>
+
+<script>
+  document.addEventListener("DOMContentLoaded",()=>{
+    document.getElementById("year").textContent=new Date().getFullYear();
+  });
+</script>
+</body>
+</html>
