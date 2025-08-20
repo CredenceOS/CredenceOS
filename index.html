@@ -133,6 +133,27 @@
   }
   .card { background: rgba(20,20,30,0.8); backdrop-filter: blur(6px); }
 
+  /* Background tuning */
+  .bg1 {
+    background: conic-gradient(from 0deg at 50% 50%, #00ffd5, #7d4dff, #00ff73, #ff5df1, #00ffd5);
+    filter: blur(60px) saturate(250%) contrast(170%); /* more color punch */
+    animation: spin 40s linear infinite;
+    opacity: .1; /* lower this to darken */
+  }
+
+  .bg2 {
+    background: radial-gradient(70% 120% at 30% 40%, #1a0033 0%, #0000 60%),
+                radial-gradient(80% 120% at 70% 60%, #001a33 0%, #0000 60%);
+    filter: blur(30px) saturate(200%) contrast(150%);
+    opacity: .20; /* drop opacity for darker mood */
+    animation: drift 32s ease-in-out infinite alternate;
+  }
+
+  .grain {
+    mix-blend-mode: overlay;
+    opacity: .12; /* add more depth without too much brightness */
+  }
+
   /* INTRO section style */
   .intro {
     text-align:center; padding: 1.2rem 1.4rem; color:#e6ffe6;
