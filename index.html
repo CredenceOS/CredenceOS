@@ -83,11 +83,28 @@
   .glyph-caption{ color:#111; text-shadow:1px 1px 2px rgba(255,255,255,0.6) }
 
   /* LIGHTBOX */
-  .lightbox{position:fixed; inset:0; background:#000d; display:none; align-items:center; justify-content:center; z-index:50}
-  .lightbox.open{display:flex}
-  .lightbox img{max-width:92vw; max-height:86vh; border-radius:18px; box-shadow: 0 20px 70px #000}
-  .close{position:fixed; top:16px; right:16px; background:#0b0c10e6; border:1px solid #7affc65a; color:var(--fg);
-         border-radius:999px; padding:.4rem .7rem; cursor:pointer}
+.lightbox{
+  position:fixed; inset:0; background:#000d;
+  display:flex;            /* keep layout even when hidden */
+  align-items:center; justify-content:center; z-index:50;
+  opacity:0;               /* start hidden */
+  pointer-events:none;     /* ignore clicks while hidden */
+  transition: opacity .25s ease;
+}
+.lightbox.open{
+  opacity:1;
+  pointer-events:auto;     /* clickable when open */
+}
+.lightbox img{
+  max-width:92vw; max-height:86vh;
+  border-radius:18px; box-shadow: 0 20px 70px #000;
+  transition: transform .25s ease;   /* subtle zoom on nav */
+}
+.close{
+  position:fixed; top:16px; right:16px;
+  background:#0b0c10e6; border:1px solid #7affc65a; color:var(--fg);
+  border-radius:999px; padding:.4rem .7rem; cursor:pointer
+}
 
   hr{border:none; height:1px; background: linear-gradient(90deg, #0000, #7affc6aa, #0000); margin:2.2rem 0}
   footer{opacity:.8; font-size:.9rem; margin:3rem 0 2rem}
@@ -177,7 +194,6 @@
   <button class="close" id="lightboxClose">close</button>
   <img src="" alt="artifact">
 </div>
-
 <script>
   // date stamps
   const d = new Date();
@@ -204,40 +220,57 @@
   }
   tick();
 
-  // lightbox logic
+  /* ---------- Lightbox + Keyboard Nav ---------- */
   const lightbox = document.getElementById("lightbox");
   const lightboxImg = lightbox.querySelector("img");
   const closeBtn = document.getElementById("lightboxClose");
 
-  // open on gallery image click
-  document.querySelectorAll(".gallery img").forEach(img => {
+  // collect gallery images in order
+  const galleryImgs = Array.from(document.querySelectorAll(".gallery img"));
+  let currentIndex = -1;
+
+  function show(index){
+    // clamp within range (wrap)
+    if(index < 0) index = galleryImgs.length - 1;
+    if(index >= galleryImgs.length) index = 0;
+    currentIndex = index;
+
+    const src = galleryImgs[currentIndex].getAttribute("src");
+    const alt = galleryImgs[currentIndex].getAttribute("alt") || "artifact";
+
+    // subtle zoom reset
+    lightboxImg.style.transform = "scale(0.985)";
+    requestAnimationFrame(() => { lightboxImg.style.transform = "scale(1)"; });
+
+    lightboxImg.src = src;
+    lightboxImg.alt = alt;
+  }
+
+  // open on click
+  galleryImgs.forEach((img, i) => {
     img.addEventListener("click", () => {
       lightbox.classList.add("open");
-      lightboxImg.src = img.src;
-      lightboxImg.alt = img.alt || "artifact";
+      show(i);
     });
   });
 
-  // close on button
-  closeBtn.addEventListener("click", () => {
+  // close actions
+  function closeLightbox(){
     lightbox.classList.remove("open");
-    lightboxImg.src = "";
-  });
-
-  // close when clicking dark backdrop
+    // let fade finish before clearing to avoid flash
+    setTimeout(() => { lightboxImg.src = ""; }, 200);
+  }
+  closeBtn.addEventListener("click", closeLightbox);
   lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) {
-      lightbox.classList.remove("open");
-      lightboxImg.src = "";
-    }
+    if (e.target === lightbox) closeLightbox();
   });
 
-  // close on Escape
+  // keyboard controls
   document.addEventListener("keydown", (e) => {
-    if (e.key === "Escape") {
-      lightbox.classList.remove("open");
-      lightboxImg.src = "";
-    }
+    if (!lightbox.classList.contains("open")) return;
+    if (e.key === "Escape") closeLightbox();
+    if (e.key === "ArrowRight") show(currentIndex + 1);
+    if (e.key === "ArrowLeft")  show(currentIndex - 1);
   });
 </script>
 </body>
