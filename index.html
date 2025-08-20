@@ -43,20 +43,20 @@
 
   /* Deep-space background layers (stars under nebula) */
   .bg1, .bg2, .grain{position:fixed; inset:-30vmax; z-index:-3; pointer-events:none}
-  canvas#stars{position:fixed; inset:0; z-index:-4; opacity:.6} /* behind everything */
+  canvas#stars{position:fixed; inset:0; z-index:-4; opacity:.26} /* behind everything */
 
   .bg1{
     background: conic-gradient(from 0deg at 50% 50%, #00ccff, #4d2dff, #00ffb0, #220044, #00ccff);
     filter: blur(200px) saturate(220%) contrast(160%);
     animation: spin 5s linear infinite; /* slower */
-    opacity:.22; /* faint nebula */
+    opacity:.42; /* faint nebula */
   }
   .bg2{
     background:
       radial-gradient(60% 100% at 30% 40%, #1a0055 0%, #0000 70%),
       radial-gradient(70% 120% at 70% 60%, #002255 0%, #0000 70%);
     filter: blur(100px) saturate(180%) contrast(160%);
-    opacity:.28; /* subtle fog */
+    opacity:.48; /* subtle fog */
     animation: drift 2s ease-in-out infinite alternate;
   }
   .grain{
