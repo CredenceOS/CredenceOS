@@ -195,83 +195,105 @@
   <img src="" alt="artifact">
 </div>
 <script>
-  // date stamps
-  const d = new Date();
-  document.getElementById('today').textContent = d.toLocaleString();
-  document.getElementById('year').textContent = d.getFullYear();
+  // Run only after DOM is ready
+  document.addEventListener("DOMContentLoaded", () => {
+    // date stamps
+    const d = new Date();
+    const todayEl = document.getElementById('today');
+    const yearEl  = document.getElementById('year');
+    if (todayEl) todayEl.textContent = d.toLocaleString();
+    if (yearEl)  yearEl.textContent  = d.getFullYear();
 
-  // starfield with parallax
-  const c = document.getElementById('stars');
-  const ctx = c.getContext('2d');
-  function size(){ c.width = innerWidth; c.height = innerHeight; }
-  addEventListener('resize', size); size();
-  const stars = Array.from({length: 333}, () => ({
-    x: Math.random()*c.width, y: Math.random()*c.height, z: Math.random()*1+0.2, r: Math.random()*1.6+0.2
-  }));
-  function tick(){
-    ctx.clearRect(0,0,c.width,c.height);
-    for(const s of stars){
-      s.x += (s.z*0.6); if(s.x>c.width) s.x=0;
-      ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
-      ctx.fillStyle = `rgba(${150+Math.random()*105|0}, ${200+Math.random()*55|0}, 255, ${0.6*s.z})`;
-      ctx.fill();
+    // starfield with parallax
+    const c = document.getElementById('stars');
+    if (c && c.getContext) {
+      const ctx = c.getContext('2d');
+      function size(){ c.width = innerWidth; c.height = innerHeight; }
+      addEventListener('resize', size); size();
+      const stars = Array.from({length: 333}, () => ({
+        x: Math.random()*c.width, y: Math.random()*c.height, z: Math.random()*1+0.2, r: Math.random()*1.6+0.2
+      }));
+      (function tick(){
+        ctx.clearRect(0,0,c.width,c.height);
+        for(const s of stars){
+          s.x += (s.z*0.6); if(s.x>c.width) s.x=0;
+          ctx.beginPath(); ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+          ctx.fillStyle = `rgba(${150+Math.random()*105|0}, ${200+Math.random()*55|0}, 255, ${0.6*s.z})`;
+          ctx.fill();
+        }
+        requestAnimationFrame(tick);
+      })();
     }
-    requestAnimationFrame(tick);
-  }
-  tick();
 
-  /* ---------- Lightbox + Keyboard Nav ---------- */
-  const lightbox = document.getElementById("lightbox");
-  const lightboxImg = lightbox.querySelector("img");
-  const closeBtn = document.getElementById("lightboxClose");
+    /* ---------- Lightbox + Keyboard Nav (robust) ---------- */
+    const lightbox     = document.getElementById("lightbox");
+    const lightboxImg  = lightbox ? lightbox.querySelector("img") : null;
+    const closeBtn     = document.getElementById("lightboxClose");
+    const gallery      = document.getElementById("gallery");
+    const galleryImgs  = gallery ? Array.from(gallery.querySelectorAll("img")) : [];
+    let currentIndex   = -1;
 
-  // collect gallery images in order
-  const galleryImgs = Array.from(document.querySelectorAll(".gallery img"));
-  let currentIndex = -1;
+    // Guard: if any critical element missing, log it to console
+    if (!lightbox || !lightboxImg || !gallery || galleryImgs.length === 0) {
+      console.warn("Lightbox wiring: missing pieces", { lightbox: !!lightbox, lightboxImg: !!lightboxImg, gallery: !!gallery, count: galleryImgs.length });
+      // Still add a basic delegate so clicks at least log
+      if (gallery) {
+        gallery.addEventListener('click', e => {
+          const img = e.target.closest('img');
+          if (img) console.log('Clicked image:', img.src);
+        });
+      }
+      return; // stop to avoid errors
+    }
 
-  function show(index){
-    // clamp within range (wrap)
-    if(index < 0) index = galleryImgs.length - 1;
-    if(index >= galleryImgs.length) index = 0;
-    currentIndex = index;
+    function show(index){
+      if (galleryImgs.length === 0) return;
+      if (index < 0) index = galleryImgs.length - 1;
+      if (index >= galleryImgs.length) index = 0;
+      currentIndex = index;
 
-    const src = galleryImgs[currentIndex].getAttribute("src");
-    const alt = galleryImgs[currentIndex].getAttribute("alt") || "artifact";
+      const img = galleryImgs[currentIndex];
+      lightboxImg.style.transform = "scale(0.985)";
+      requestAnimationFrame(() => { lightboxImg.style.transform = "scale(1)"; });
 
-    // subtle zoom reset
-    lightboxImg.style.transform = "scale(0.985)";
-    requestAnimationFrame(() => { lightboxImg.style.transform = "scale(1)"; });
+      lightboxImg.src = img.getAttribute("src");
+      lightboxImg.alt = img.getAttribute("alt") || "artifact";
+    }
 
-    lightboxImg.src = src;
-    lightboxImg.alt = alt;
-  }
-
-  // open on click
-  galleryImgs.forEach((img, i) => {
-    img.addEventListener("click", () => {
+    function openAt(img){
+      const idx = galleryImgs.indexOf(img);
       lightbox.classList.add("open");
-      show(i);
+      show(idx >= 0 ? idx : 0);
+    }
+
+    function closeLightbox(){
+      lightbox.classList.remove("open");
+      setTimeout(() => { lightboxImg.src = ""; }, 200);
+    }
+
+    // Event delegation (more reliable than per-image listeners)
+    gallery.addEventListener("click", (e) => {
+      const img = e.target.closest("img");
+      if (!img || !gallery.contains(img)) return;
+      openAt(img);
     });
-  });
 
-  // close actions
-  function closeLightbox(){
-    lightbox.classList.remove("open");
-    // let fade finish before clearing to avoid flash
-    setTimeout(() => { lightboxImg.src = ""; }, 200);
-  }
-  closeBtn.addEventListener("click", closeLightbox);
-  lightbox.addEventListener("click", (e) => {
-    if (e.target === lightbox) closeLightbox();
-  });
+    if (closeBtn) closeBtn.addEventListener("click", closeLightbox);
+    lightbox.addEventListener("click", (e) => {
+      if (e.target === lightbox) closeLightbox();
+    });
 
-  // keyboard controls
-  document.addEventListener("keydown", (e) => {
-    if (!lightbox.classList.contains("open")) return;
-    if (e.key === "Escape") closeLightbox();
-    if (e.key === "ArrowRight") show(currentIndex + 1);
-    if (e.key === "ArrowLeft")  show(currentIndex - 1);
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("open")) return;
+      if (e.key === "Escape")      closeLightbox();
+      if (e.key === "ArrowRight")  show(currentIndex + 1);
+      if (e.key === "ArrowLeft")   show(currentIndex - 1);
+    });
+
+    // sanity log
+    console.log("Lightbox ready. Images:", galleryImgs.length);
   });
 </script>
+
 </body>
 </html>
